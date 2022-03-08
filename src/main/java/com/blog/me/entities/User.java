@@ -2,8 +2,10 @@ package com.blog.me.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "users", schema = "public")
 public class User {
 
     @Id

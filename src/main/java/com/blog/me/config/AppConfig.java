@@ -1,6 +1,5 @@
 package com.blog.me.config;
 
-import org.springdoc.core.GroupedOpenApi;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
