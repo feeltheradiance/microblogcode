@@ -1,5 +1,6 @@
 package com.blog.me.controllers;
 
+import com.blog.me.config.AppConfig;
 import com.blog.me.dao.PostRepository;
 import com.blog.me.entities.Post;
 import com.blog.me.services.PostService;
@@ -17,8 +18,17 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    private Boolean answer = false;
+
     @Autowired
     PostRepository postRepository;
+
+    @Autowired
+    AppConfig.PubsubOutboundGateway outboundGateway;
+
+    public void setAnswer(Boolean answer) {
+        this.answer = answer;
+    }
 
     @GetMapping
     public ResponseEntity<List<Post>> getPostsList(){
@@ -31,8 +41,17 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> create(@RequestBody Post post){
-        return new ResponseEntity<>(postRepository.save(post), HttpStatus.CREATED);
+    public ResponseEntity<Post> create(@RequestBody Post post) throws InterruptedException {
+        outboundGateway.sendToPubsub(post.getContent());
+        System.out.println("Content send: " + post.getContent());
+        Thread.sleep(3000);
+        if (answer.equals(true)) {
+            System.out.println("Post saved");
+            return new ResponseEntity<>(postRepository.save(post), HttpStatus.CREATED);
+        } else {
+            System.out.println("Post not saved");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping
